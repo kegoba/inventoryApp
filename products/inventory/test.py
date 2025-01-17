@@ -40,7 +40,7 @@ class InventoryViewSetTests(APITestCase):
         self.assertEqual(response.data["quantity"], updated_data["quantity"])
 
     def test_low_stock_alert(self):
-        response = self.client.get(f"{self.url}low_stock_alert/")
+        response = self.client.get(f"{self.url}low_stock/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("low_stock_alert", response.data)
 
