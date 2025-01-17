@@ -3,7 +3,7 @@ services:
   # Web service
   web:
     build: .
-    command: gunicorn inventory.wsgi:application --bind 0.0.0.0:8000
+    command: ["sh", "-c", "/migratescript.sh"]
     volumes:
       - .:/app
     ports:

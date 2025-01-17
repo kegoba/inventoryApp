@@ -1,4 +1,3 @@
-
 FROM python:3.9-slim
 
 
@@ -26,7 +25,8 @@ COPY . /app/
 COPY .env /app/.env
 
 
-RUN ls /app/manage.py
+COPY migratescript.sh /migratescript.sh
+RUN chmod +x /migratescript.sh
 
 
-ENTRYPOINT ["sh", "-c", "gunicorn inventory.wsgi:application --bind 0.0.0.0:8000"]
+ENTRYPOINT ["/migratescript.sh"]
