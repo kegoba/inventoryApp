@@ -93,7 +93,9 @@ complete postman documentation : https://documenter.getpostman.com/view/29626607
 
 Access the server at base_url :  https://inventoryapp-nm6r.onrender.com/api/v1/
 
-Accessing API Endpoints
+
+
+Accessing API Endpoints via any browser and postman
 Products API
 List Products:
 URL: https://inventoryapp-nm6r.onrender.com/api/v1/products/
