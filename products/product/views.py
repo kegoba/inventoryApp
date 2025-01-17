@@ -27,8 +27,15 @@ class ProductViewSet(viewsets.ViewSet):
     def list(self, request):
         page = request.query_params.get('page', 1)
         per_page = request.query_params.get('per_page', 10)
+        name = request.query_params.get('name', None)
+        quantity = request.query_params.get('quantity', None)
+        price = request.query_params.get('price', None)
+        if quantity is not None:
+            quantity = int(quantity)
+        if price is not None:
+            price = float(price)
 
-        result = ProductRepository.get_all_products(page=page, per_page=per_page)
+        result = ProductRepository.get_all_products(page, per_page,name,quantity,price)
         serializer = ProductSerializer(result["products"], many=True)
 
         return Response({

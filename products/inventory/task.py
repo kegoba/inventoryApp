@@ -18,6 +18,7 @@ from ..product.repositories import ProductRepository
 
 
 
+
 #@shared_task
 def generate_report():
     report_data = {
@@ -25,10 +26,9 @@ def generate_report():
         "supplier_performance": []
     }
 
-    # Fetch products with low stock
+
     low_stock_products = Product.objects.filter(quantity__lte=10)
     for product in low_stock_products:
-        # Access supplier's name using the correct foreign key relationship
         supplier_name = f"{product.supplier_id.first_name} {product.supplier_id.last_name}" if product.supplier_id else "Unknown"
         report_data["low_stock_alerts"].append({
             "product_name": product.name,
@@ -36,7 +36,7 @@ def generate_report():
             "supplier_name": supplier_name
         })
 
-    # Fetch supplier performance
+  
     supplier_performance = (
         Product.objects.values("supplier_id__first_name", "supplier_id__last_name")
         .annotate(
@@ -53,25 +53,22 @@ def generate_report():
             "total_value": supplier["total_value"]
         })
 
-    # Generate CSV report file
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     report_file = f"inventory_report_{timestamp}.csv"
     file_path = os.path.join("reports", report_file)
 
-    # Ensure reports directory exists
+ 
     os.makedirs("reports", exist_ok=True)
 
-    # Write report data to CSV file
+
     with open(file_path, "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
 
-        # Write low stock alerts section
         writer.writerow(["Low Stock Alerts"])
         writer.writerow(["Product Name", "Quantity", "Supplier Name"])
         for item in report_data["low_stock_alerts"]:
             writer.writerow([item["product_name"], item["quantity"], item["supplier_name"]])
 
-        # Write supplier performance metrics section
         writer.writerow([])
         writer.writerow(["Supplier Performance Metrics"])
         writer.writerow(["Supplier Name", "Total Products", "Total Value"])

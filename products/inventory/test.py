@@ -6,7 +6,6 @@ from unittest.mock import patch
 from django.urls import reverse
 
 class InventoryViewSetTests(APITestCase):
-
     def setUp(self):
         self.supplier = Supplier.objects.create(
             first_name= "Dorcas",
@@ -19,7 +18,6 @@ class InventoryViewSetTests(APITestCase):
             supplier=self.supplier
         )
         self.url = "/api/v1/inventory/"
-
     def test_list_inventory(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)

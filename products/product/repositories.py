@@ -9,9 +9,17 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 class ProductRepository:
     @staticmethod
-    def get_all_products(page, per_page):
+    def get_all_products(page, per_page, name=None, quantity=None, price=None):
 
+    
         products = Product.objects.all()
+        if name:
+            products = products.filter(name__icontains=name)
+        if quantity is not None:
+            products = products.filter(quantity=quantity)
+        if price is not None:
+            products = products.filter(price=price) 
+
         paginator = Paginator(products, per_page)
 
         try:
