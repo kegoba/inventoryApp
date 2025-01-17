@@ -1,16 +1,32 @@
 # products/repositories.py
 
-from products.models import Product
-from .serializers import ProductSerializer
-#from suppliers.models import Supplier
+from products.models import Product,Supplier
+from .serializers import ProductSerializer, FileUploadSerializer
 from django.db import transaction
 from django.db.models import F
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 
 class ProductRepository:
     @staticmethod
-    def get_all_products():
-        return Product.objects.all()
+    def get_all_products(page, per_page):
 
+        products = Product.objects.all()
+        paginator = Paginator(products, per_page)
+
+        try:
+            paginated_products = paginator.page(page)
+        except PageNotAnInteger:
+            paginated_products = paginator.page(1)
+        except EmptyPage:
+            paginated_products = []
+
+        return {
+            "products": paginated_products.object_list,
+            "total_products": paginator.count,
+            "total_pages": paginator.num_pages,
+            "current_page": page,
+        }
     @staticmethod
     def get_product_by_id(product_id):
         return Product.objects.filter(id=product_id).first()
@@ -18,12 +34,9 @@ class ProductRepository:
     @staticmethod
     def create_product(data):
         supplier_id = data.get('supplier_id')
+        print(supplier_id)
         if supplier_id and not Supplier.objects.filter(id=supplier_id).exists():
             return {"error": "Supplier does not exist"}
-        quantity = data.get('quantity', 0)
-        if quantity < 0:
-            return {"error": "Quantity cannot be negative"}
-
         serializer = ProductSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -46,8 +59,12 @@ class ProductRepository:
         return product
 
     @staticmethod
-    def delete_product(product):
-        product.delete()
+    def delete_product(product_id):
+        product = Product.objects.get(id=product_id)
+        if product:  
+            product.delete()
+            return {"success": "deleted successfully"}
+        return {"error": "Product not found"}
 
     @staticmethod
     def update_inventory(product_id, quantity):
@@ -61,5 +78,36 @@ class ProductRepository:
         return {"error": "Product not found"}
 
     @staticmethod
-    def check_low_stock_products():
-        return Product.objects.filter(quantity__lte=F('low_stock_threshold'))
+    def check_low_stock_products(page, per_page):
+        products = Product.objects.filter(quantity__lte=F('low_stock_threshold'))
+        paginator = Paginator(products, per_page)
+
+        try:
+            paginated_products = paginator.page(page)
+        except PageNotAnInteger:
+            paginated_products = paginator.page(1)
+        except EmptyPage:
+            paginated_products = []
+
+        return {
+            "products": paginated_products.object_list,
+            "total_products": paginator.count,
+            "total_pages": paginator.num_pages,
+            "current_page": page,
+        }
+        
+
+    @staticmethod
+    def bulk_create_products(products_data):
+
+        created_products = []
+        errors = []
+
+        for row in products_data:
+            serializer = FileUploadSerializer(data=row)
+            if serializer.is_valid():
+                created_products.append(serializer.save())
+            else:
+                errors.append(serializer.errors)
+        
+        return created_products, errors

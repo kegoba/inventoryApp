@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Supplier
+from products.models import Supplier
 
 class SupplierSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,7 +16,6 @@ class SupplierSerializer(serializers.ModelSerializer):
         if len(value.strip()) < 3:
             raise serializers.ValidationError("Invalid Supplier last name.")
         return value
-        #constact validation
     def validate_email(self, value):
         if Supplier.objects.filter(email=value).exists():
             raise serializers.ValidationError("This email is already in use.")
