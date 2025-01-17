@@ -13,7 +13,7 @@ class SupplierViewSet(viewsets.ViewSet):
         serializer = SupplierSerializer(result["suppliers"], many=True)
 
         return Response({
-            "products": serializer.data,
+            "suppliers": serializer.data,
             "total_products": result["total_products"],
             "total_pages": result["total_pages"],
             "current_page": result["current_page"],

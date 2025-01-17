@@ -191,4 +191,13 @@ Method: DELETE
 Description: Deletes a product by its primary key (<pk>).
 
 
+
+
+
+To test use below command in the project root directory
+python manage.py test --keepdb
+
+
+
+
 --Django>=4.2.10, <5.0.0

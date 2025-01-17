@@ -28,9 +28,11 @@ class SupplierViewSetTests(APITestCase):
         new_supplier_data = {
           "first_name": "Dorcas",
             "last_name": "Irubor",
-            "email": "dorcas@example.com",
+            "email": "dorcas@gmail.com",
         }
         response = self.client.post(self.url, new_supplier_data, format="json")
+        #print(response.status_code)  # Should print 400
+        #print(response.data) 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data["first_name"], new_supplier_data["first_name"])
 

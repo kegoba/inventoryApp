@@ -73,9 +73,15 @@ DATABASES = {
     'default': dj_database_url.config(
         default=config('DATABASE_URL'),
         conn_max_age=600, 
-        ssl_require=True   
+        ssl_require=True 
+    ),
+    'test': dj_database_url.config(
+        default=config('DATABASE_URL'),
+        conn_max_age=0,    
+        ssl_require=True
     )
 }
+
 
 
 
