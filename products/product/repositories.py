@@ -42,7 +42,7 @@ class ProductRepository:
     @staticmethod
     def create_product(data):
         supplier_id = data.get('supplier_id')
-        print(supplier_id)
+        #print(supplier_id)
         if supplier_id and not Supplier.objects.filter(id=supplier_id).exists():
             return {"error": "Supplier does not exist"}
         serializer = ProductSerializer(data=data)
@@ -53,14 +53,23 @@ class ProductRepository:
 
     @staticmethod
     def update_product(product, data):
+    
+        if 'supplier_id' not in data:
+            return {"error": "Supplier id must be included"}
+        try:
+            supplier = Supplier.objects.get(id=data['supplier_id'])
+            product.supplier_id = supplier  
+        except Supplier.DoesNotExist:
+            return {"error": "Supplier with the given ID does not exist"}
+
         if 'quantity' in data:
             new_quantity = data['quantity']
             if new_quantity < 0:
                 return {"error": "Quantity cannot be negative"}
             product.quantity = new_quantity
-        
+
         for field, value in data.items():
-            if field != 'quantity': 
+            if field != 'quantity' and field != 'supplier_id':
                 setattr(product, field, value)
 
         product.save()

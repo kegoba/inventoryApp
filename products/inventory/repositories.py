@@ -15,22 +15,27 @@ class InventoryRepository:
         return Product.objects.filter(id=product_id).first()
 
     @staticmethod
-    def update_inventory(product_id, data):
-        product = Product.objects.filter(id=product_id).first()
-        if not product:
-            return {"error": "Product not found"}
-        quantity = data.get("quantity")
-        price = data.get("price")
-        if quantity is not None:
-            if quantity < 1:
-                return {"error": "Quantity cannot be less than 1"}
-            product.quantity = quantity
+    def update_inventory(product, data):
 
-        if price is not None:
-            if price < 1:
-                return {"error": "Price cannot be less than 1"}
-            product.price = price
+        if 'supplier_id' not in data:
+            return {"error": "Supplier id must be included"}
 
+        try:
+            supplier = Supplier.objects.get(id=data['supplier_id'])
+            product.supplier_id = supplier  
+        except Supplier.DoesNotExist:
+            return {"error": "Supplier with the given ID does not exist"}
+
+        if 'quantity' in data:
+            new_quantity = data['quantity']
+            if new_quantity < 0:
+                return {"error": "Quantity cannot be negative"}
+            product.quantity = new_quantity
+
+        for field, value in data.items():
+            if field != 'quantity' and field != 'supplier_id':
+                setattr(product, field, value)
+        print(product,"products")
         product.save()
         return product
 

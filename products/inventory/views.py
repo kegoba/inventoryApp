@@ -23,11 +23,22 @@ class InventoryViewSet(viewsets.ViewSet):
 
 
     def update(self, request, pk=None):
-        result = InventoryRepository.update_inventory(pk, request.data)
-        if isinstance(result, dict) and 'error' in result:
-            return Response(result, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(InventorySerializer(result).data)
+        try:
+            product = InventoryRepository.get_product_by_id(pk)
+            print(product)
+            print(request.data)
+            if not product:
+                return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+            print("i am here 1")
+            result = InventoryRepository.update_inventory(product, request.data)
+            print("i am here 2")
+            if isinstance(result, dict) and 'error' in result:
+                return Response(result, status=status.HTTP_400_BAD_REQUEST)
+
+            return Response(InventorySerializer(result).data)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
     @action(detail=False, methods=['get'])

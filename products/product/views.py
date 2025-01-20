@@ -84,23 +84,6 @@ class ProductViewSet(viewsets.ViewSet):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def update_inventory(self, request, pk=None):
-        try:
-            product = ProductRepository.get_product_by_id(pk)
-            if not product:
-                return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
-
-            quantity = request.data.get('quantity')
-            if quantity is None:
-                return Response({"error": "Quantity is required to update inventory."}, status=status.HTTP_400_BAD_REQUEST)
-
-            result = ProductRepository.update_inventory(pk, quantity)
-            if isinstance(result, dict) and 'error' in result:
-                return Response(result, status=status.HTTP_400_BAD_REQUEST)
-
-            return Response(ProductSerializer(result).data)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=False, methods=['get'])
     def low_stock(self, request):
